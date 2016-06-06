@@ -18,7 +18,7 @@ from themis.checkpoint import retry
 from themis.fixup import filter_usage_log_by_date, filter_usage_log_by_user_experience, deakin, filter_corpus
 from themis.judge import AnnotationAssistFileType, annotation_assist_qa_input, create_annotation_assist_corpus, \
     interpret_annotation_assist, JudgmentFileType, augment_usage_log
-from themis.nlc import train_nlc, NLC, classifier_list, classifier_status, remove_classifiers
+from themis.nlc import train_nlc, train_oracle, NLC, classifier_list, classifier_status, remove_classifiers
 from themis.plot import generate_curves, plot_curves
 from themis.question import QAPairFileType, UsageLogFileType, extract_question_answer_pairs_from_usage_logs, \
     QuestionFrequencyFileType, DATE_TIME
@@ -303,9 +303,9 @@ def answer_command(subparsers):
     nlc_train.add_argument("name", help="classifier name")
     nlc_train.set_defaults(func=nlc_train_handler)
 
-    #Train oracle collate file @vaghela
+    #Train oracle collate file
     oracle_train = nlc_subparsers.add_parser("prep-training-data", parents=[nlc_shared_arguments], help="train oracle output")
-    oracle_train.add_argument("collated-file", type=CollatedFileType(), help="collated file created by oracle")
+    oracle_train.add_argument("collated", type=CollatedFileType(), help="collated file created by oracle")
     oracle_train.set_defaults(func=oracle_train_handler)
 
     # Use an NLC model.
@@ -357,9 +357,10 @@ def nlc_status_handler(args):
 
 def nlc_delete_handler(args):
     remove_classifiers(args.url, args.username, args.password, args.classifiers)
-#vaghela
-#def oracle_train_handler(args):
-    #print(train_nlc(args.url, args.username, args.password, args.truth, args.name))
+
+
+def oracle_train_handler(args):
+    print(train_oracle(args.url, args.username, args.password, args.collated))
 
 class QuestionSetFileType(CsvFileType):
     def __init__(self):

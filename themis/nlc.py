@@ -37,6 +37,22 @@ def train_nlc(url, username, password, truth, name):
     return r["classifier_id"]
 
 
+
+
+def train_oracle(url, username, password, collated):
+    logger.info("Train oracle output with %d instances" % len(collated))
+    with tempfile.TemporaryFile() as training_file:
+        collated[QUESTION] = collated[QUESTION].str.replace("\n", " ")
+        collated[ANSWER] = collated[ANSWER].str.replace("\n", " ")
+        to_csv(training_file, collated[[QUESTION, ANSWER]], header=False, index=False)
+        training_file.seek(0)
+        nlc = NaturalLanguageClassifier(url=url, username=username, password=password)
+        r = nlc.create(training_data=training_file)
+        logger.info(pretty_print_json(r))
+    return r["classifier_id"]
+
+
+
 class NLC(object):
     """
     Wrapper to a Natural Language Classifier via the
