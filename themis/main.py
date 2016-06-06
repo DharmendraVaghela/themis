@@ -302,6 +302,12 @@ def answer_command(subparsers):
     nlc_train.add_argument("truth", type=TruthFileType(), help="truth file created by the 'xmgr truth' command")
     nlc_train.add_argument("name", help="classifier name")
     nlc_train.set_defaults(func=nlc_train_handler)
+
+    #Train oracle collate file @vaghela
+    oracle_train = nlc_subparsers.add_parser("prep-training-data", parents=[nlc_shared_arguments], help="train oracle output")
+    oracle_train.add_argument("collated-file", type=CollatedFileType(), help="collated file created by oracle")
+    oracle_train.set_defaults(func=oracle_train_handler)
+
     # Use an NLC model.
     nlc_use = nlc_subparsers.add_parser("use", parents=[nlc_shared_arguments, qa_shared_arguments, checkpoint_argument],
                                         help="use NLC model")
@@ -351,7 +357,9 @@ def nlc_status_handler(args):
 
 def nlc_delete_handler(args):
     remove_classifiers(args.url, args.username, args.password, args.classifiers)
-
+#vaghela
+#def oracle_train_handler(args):
+    #print(train_nlc(args.url, args.username, args.password, args.truth, args.name))
 
 class QuestionSetFileType(CsvFileType):
     def __init__(self):
